@@ -62,4 +62,17 @@ test.describe('Login - positive scenarios', () => {
     await expect(page.locator('#error')).toHaveText('Your username is invalid!')
   
   });
+
+  test('Load page without css and images', async({page}) => {
+    await page.route(/\.css($|\?)/i, route => route.abort())
+
+    await page.route(/\.(png|jpe?g|gif|webp|svg|ico)($|\?)/i, route => route.abort())
+
+    await page.goto(LOGIN_URL)
+
+    await page.waitForTimeout(5000)
+
+    const stylesCount = await page.evaluate(() => document.styleSheets.length)
+    await expect(stylesCount).toBe(0)
+  })
 })
